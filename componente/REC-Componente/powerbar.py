@@ -138,54 +138,101 @@ class _Bar(QtWidgets.QWidget):
 # Custom widget que combina una Bar y un QDial
 class PowerBar(QtWidgets.QWidget):
 
-    def __init__(self, steps=5, bol=True, parent=None):
+    def __init__(self, steps=5, bol=True, color="#4400B0EE",color2="#4400B0EE", parent=None):
         super().__init__(parent)
         self.bol = False
-
-        
-
-        if bol==False:
-
+        self.color = "#4400B0EE"
+        self.color2 = "#7400B0EE"
             
-            self.secondaryToggle = AnimatedToggle(
-            checked_color="#FFB000",
-            pulse_checked_color="#44FFB000"
-            )
-            # Creamos un Layout vertical con un objeto Bar y un objeto QDial
-            layout = QtWidgets.QHBoxLayout()
-            # layout2 = QtWidgets.QVBoxLayout()
-            self._bar = _Bar(steps)
-            layout.addWidget(self._bar)
-            self.BarSliderSync = QSlider()
-            # Establecemos algunas propiedades del QDial
-            self.BarSliderSync.setMinimum(0)
-            self.BarSliderSync.setMaximum(100)
+        self.secondaryToggle = AnimatedToggle(
+        checked_color=color,
+        pulse_checked_color=color2
+        )
+        # Creamos un Layout vertical con un objeto Bar y un objeto QDial
+        layout = QtWidgets.QHBoxLayout()
+        layout2 = QtWidgets.QHBoxLayout()
+        layout3 =  QtWidgets.QVBoxLayout()
+        self._bar = _Bar(steps)
+        layout.addWidget(self._bar)
+        self.BarSliderSync = QSlider()
+        self.nulo = 0
+        # Establecemos algunas propiedades del QDial
+        self.BarSliderSync.setMinimum(0)
+        self.BarSliderSync.setMaximum(100)
+        self.label = QLabel()
+        self.label.setText("*Soy la Imagen 1*")
+        self.label.setVisible(False)
+
+        self.label2 = QLabel()
+        self.label2.setText("*Soy la Imagen 2*")
+
             # self._dial.setNotchesVisible(True)
             # self._dial.setWrapping(False)
             # Conectamos la señal del cambio de valor en el QDial con _trigger_refresh de la Bar para actualizarla
-            self.BarSliderSync.valueChanged.connect(self._bar._trigger_refresh)
+        
 
             # De la misma forma, conectamos la señal del cambio de valor en la barra con el setValue del QDial para actualizarlo
-            self._bar.clickedValue.connect(self.BarSliderSync.setValue)
+        self._bar.clickedValue.connect(self.BarSliderSync.setValue)
 
-            # layout2.addWidget(self.secondaryToggle)
+        layout2.addWidget(self.secondaryToggle)
 
-            layout.addWidget(self.BarSliderSync)
-            # layout.addLayout(layout2)
-            self.setLayout(layout)
+        layout.addWidget(self.BarSliderSync)
+        layout3.addWidget(self.label)
+        layout3.addWidget(self.label2)
+        # layout.addLayout(layout2)
+        layout3.addLayout(layout)
+        layout3.addLayout(layout2)
+        self.setLayout(layout3)
 
-        else:
-            print("Activa el toggle")
+        self.secondaryToggle.clicked.connect(self.syncChange)
+
+        
+        # print("Activa el toggle")
     # Este método se ejecuta cuando se intenta obtener alguna propiedad de PowerBar
+    @Property(str)
+    def getColor1(self):
+        return self.color
+
+    @Property(str)
+    def setColor1(self, color):
+        self.color = color
+
+    @Property(str)
+    def getColor2(self):
+        return self.color2
+
+    @Property(str)
+    def setColor2(self, color2):
+        self.color2 = color2
 
     def syncChange(self):
-        if (self.secondaryToggle.isChecked()):
+        if (self.secondaryToggle.isChecked()==False):
             print(self.secondaryToggle.isChecked())
+
             self.bol = True
-            # self.BarSliderSync.setValue(0)
+            self.BarSliderSync.setMinimum(0)
+            self.BarSliderSync.setMaximum(1)
+            self.BarSliderSync.setValue(0)
+            self.label.setVisible(False)
+            self.label2.setVisible(True)
+            # self.BarSliderSync.setVisible(False)
+            
+
         else:
-           print(self.secondaryToggle.isChecked())
-           self.bol = False
+            print(self.secondaryToggle.isChecked())
+        #    while self.bol == True:
+            self.BarSliderSync.setMinimum(0)
+            self.BarSliderSync.setMaximum(100)
+            self.BarSliderSync.setValue(0)
+            self.label.setVisible(True)
+            self.label2.setVisible(False)
+            self.BarSliderSync.valueChanged.connect(self._bar._trigger_refresh)
+            # self.BarSliderSync.setValue(0)
+
+
+            self.bol = False
+    def returnNull(self):
+        return self.nulo
 
     def __getattr__(self, name):
         # Si se trata de una propiedad de PowerBar, la devuelve

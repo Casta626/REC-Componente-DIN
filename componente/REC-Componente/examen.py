@@ -1,4 +1,5 @@
 import sys
+import ctypes
 from PySide6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QWidget
 from PySide6.QtGui import QColor
 from PySide6.QtCore import Qt
@@ -20,12 +21,11 @@ class MainWindow(QMainWindow):
         # powerbar = PowerBar(10)
         # Creamos una instancia del nuevo componente PowerBar con colores personalizados (lista)
         self.bol = False
-        powerbar = PowerBar(["#5e4fa2" , "#3288bd", "#66c2a5", "#fee08b", "#fdae61"], self.bol)
+        powerbar = PowerBar(["#5e4fa2" , "#3288bd", "#66c2a5", "#fee08b", "#fdae61"],  "#4400B0EE", "#4700B0EE")
         layout.addWidget(powerbar)
         
 
         mainToggle = AnimatedToggle()
-
         self.secondaryToggle = AnimatedToggle(
         checked_color="#FFB000",
         pulse_checked_color="#44FFB000"
@@ -33,15 +33,18 @@ class MainWindow(QMainWindow):
         mainToggle.setFixedSize(mainToggle.sizeHint())
         self.secondaryToggle.setFixedSize(mainToggle.sizeHint())
 
-        slider = QSlider()
+        
+
+        # slider = QSlider()
 
         # layout2.addWidget(slider)
 
-        layout.addWidget(self.secondaryToggle)
+        # layout.addWidget(secondaryToggle)
 
-        layout2.addWidget(self.secondaryToggle)
+        # layout2.addWidget(self.secondaryToggle)
         layout3.addLayout(layout)
         layout3.addLayout(layout2)
+        # layout3.addWidget(self.label)
 
         # layout.addLayout(layout2)
         container = QWidget()
@@ -49,6 +52,16 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(container)
 
         self.secondaryToggle.clicked.connect(self.syncChange)
+
+        user32 = ctypes.windll.user32
+        user32.SetProcessDPIAware()
+        ancho, alto = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
+        anchura= (ancho*10)/(15)
+        altura=(alto*10)/(15)
+
+        
+
+        self.resize(anchura, altura)
 
     def syncChange(self):
         if (self.secondaryToggle.isChecked()):
